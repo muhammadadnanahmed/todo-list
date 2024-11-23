@@ -1,0 +1,72 @@
+/* body {
+  padding: 50px 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#main {
+  max-width: 600px;
+  margin: 0 auto;
+  background-image: ;
+  background-image: image();
+} */
+
+/* Background Image for the Whole Page */
+body {
+  padding: 50px 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-image: url('./pg_photo.jpeg'); /* Replace with your image path */
+  background-size: cover; /* Ensures the image covers the entire screen */
+  background-position: center; /* Centers the image */
+  background-attachment: fixed; /* Keeps the image fixed during scroll */
+  color: white; /* Makes text readable against the background */
+}
+
+/* Styling for Main Section */
+#main {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.box {
+  margin-top: 20px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input[type="text"] {
+  width: 70%;
+  padding: 5px;
+}
+
+button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.8em;
+  color: gray;
+  margin-top: 5px;
+}
+
