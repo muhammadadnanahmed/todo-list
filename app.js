@@ -1,68 +1,105 @@
-// Data structure now includes timestamps
-var data = [
-  { text: "list1", timestamp: new Date().toLocaleString() },
-  { text: "list2", timestamp: new Date().toLocaleString() },
-];
+const todoForm = document.getElementById('todo-form');
+const todoInput = document.getElementById('todo-input');
+const todoList = document.getElementById('todo-list');
 
-var boxDiv = document.querySelector(".box");
-
-function submitInput(e) {
-  e.preventDefault();
-  var inp = document.getElementById("input-text");
-  if (inp.value.trim() === "") return; // Prevent empty submissions
-
-  // Add new item with timestamp
-  data.push({ text: inp.value, timestamp: new Date().toLocaleString() });
-  inp.value = ""; // Clear input
-  renderData();
-}
-
+// Retrieve and render data
 function renderData() {
-  boxDiv.innerHTML = "";
-  if (data.length === 0) {
-    boxDiv.innerHTML = "<p>No items in the list. Add one!</p>";
-    return;
-  }
+  const todos = JSON.parse(localStorage.getItem('todos')) || [];
+  todoList.innerHTML = '';
 
-  data.forEach((item, index) => {
-    const itemDiv = document.createElement("div");
-    itemDiv.className = "list-item";
-    itemDiv.innerHTML = `
-      <p id="${index}">${item.text}</p>
-      <span class="timestamp">Added/Updated: ${item.timestamp}</span>
-      <input type="text" value="${item.text}" class="inpEdit" style="display: none;" />
-      <button onClick="editItem(event)">Edit</button>
-      <button onClick="deleteItem(${index})">Delete</button>
-    `;
-    boxDiv.appendChild(itemDiv);
+  todos.forEach((todo, index) => {
+    const li = document.createElement('li');
+    li.className = 'todo-item';
+    if (todo.done) li.classList.add('done');
+    
+    const span = document.createElement('span');
+    span.textContent = todo.text;
+
+    // Buttons
+    const buttons = document.createElement('div');
+    buttons.className = 'todo-buttons';
+
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.disabled = todo.done;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+
+    const doneButton = document.createElement('button');
+    doneButton.textContent = 'Done';
+    doneButton.disabled = todo.done;
+
+    buttons.append(editButton, deleteButton, doneButton);
+
+    li.append(span, buttons);
+    todoList.appendChild(li);
+
+    // Button functionalities
+    editButton.addEventListener('click', () => enableEditMode(li, index));
+    deleteButton.addEventListener('click', () => deleteItem(index));
+    doneButton.addEventListener('click', () => markAsDone(index));
   });
 }
 
-function deleteItem(index) {
-  if (confirm("Are you sure you want to delete this item?")) {
-    data.splice(index, 1);
-    renderData();
-  }
-}
+// Add new item
+todoForm.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-function saveEdit(index, newValue) {
-  // Update text and timestamp
-  data[index] = { text: newValue, timestamp: new Date().toLocaleString() };
+  const text = todoInput.value.trim();
+  if (!text) return;
+
+  const todos = JSON.parse(localStorage.getItem('todos')) || [];
+  todos.push({ text, done: false });
+  localStorage.setItem('todos', JSON.stringify(todos));
+
+  todoInput.value = '';
+  renderData();
+});
+
+// Delete item
+function deleteItem(index) {
+  const todos = JSON.parse(localStorage.getItem('todos'));
+  todos.splice(index, 1);
+  localStorage.setItem('todos', JSON.stringify(todos));
   renderData();
 }
 
-function editItem(e) {
-  const listItem = e.target.parentElement;
-  const id = listItem.querySelector("p").id;
-  const inpEdit = listItem.querySelector(".inpEdit");
-  if (e.target.innerText === "Edit") {
-    inpEdit.style.display = "block";
-    listItem.querySelector("p").style.display = "none";
-    e.target.innerText = "Save";
-  } else {
-    saveEdit(id, inpEdit.value);
-    e.target.innerText = "Edit";
-  }
+// Mark item as done
+function markAsDone(index) {
+  const todos = JSON.parse(localStorage.getItem('todos'));
+  todos[index].done = true;
+  localStorage.setItem('todos', JSON.stringify(todos));
+  renderData();
 }
 
-renderData();
+// Enable edit mode
+function enableEditMode(li, index) {
+  const todos = JSON.parse(localStorage.getItem('todos'));
+  const span = li.querySelector('span');
+  const buttons = li.querySelector('.todo-buttons');
+
+  // Create input field and save button
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = todos[index].text;
+  
+  const saveButton = document.createElement('button');
+  saveButton.textContent = 'Save';
+
+  // Clear existing buttons
+  buttons.innerHTML = '';
+  buttons.appendChild(saveButton);
+
+  // Replace span with input
+  li.replaceChild(input, span);
+
+  saveButton.addEventListener('click', () => {
+    todos[index].text = input.value.trim();
+    localStorage.setItem('todos', JSON.stringify(todos));
+    renderData();
+  });
+}
+
+// Initial render
+document.addEventListener('DOMContentLoaded', renderData);
